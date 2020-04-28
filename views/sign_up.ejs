@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home Learning</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <%- include(header)%>
+            <div class="form-wrapper">
+                <form class="sign-up-form" action="sign_up" method="post">
+                    <h2>Sign Up</h2>
+                    <label for="first_name">First name:</label>
+                    <input type="text" id="first_name" name="first_name" required>
+                    <label for="last_name">Last name:</label>
+                    <input type="text" id="last_name" name="last_name" required>
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" required>
+                    <label for="hash">Hash:</label>
+                    <input type="text" id="hash" name="hash" required>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                    <label for="repeat_password">Repeat password:</label>
+                    <input type="password" id="repeat_password" name="repeat_password" required>
+                    <input type="submit" value="Sign Up">
+                </form>
+            </div>
+            <div class="footer"></div>
+    </div>
+</body>
+
+</html>

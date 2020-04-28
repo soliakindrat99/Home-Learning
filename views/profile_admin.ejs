@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home Learning</title>
+    <link rel="stylesheet" href="../css/style_pages.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:700,300,600,800,400&subset=cyrillic,cyrillic-ext,latin">
+</head>
+
+<body class="profile-admin">
+    <div class="main-wrapper">
+        <%- include(header)%>
+            <div class="main-block">
+                <div class="profile-wrapper">
+                    <h2>Admin Profile</h2>
+                    <div class="user-avatar">
+                        <div class="user-img">
+                            <img class="profile-img" src="../images/admin.png" title="user-avatar" alt="user-avatar">
+                        </div>
+                        <div class="full-name">
+                            <%=admin_data['first_name']%>
+                                <%=admin_data['last_name']%>
+                        </div>
+                    </div>
+
+                    <div class="menu-profile">
+                        <ul class="list-of-menu">
+                            <li class="active" data-id="#button1">Edit profile</li>
+                            <li data-id="#button2">Add user</li>
+                            <li data-id="#button3">View teachers</li>
+                            <li data-id="#button4">View groups</li>
+                            <li data-id="#button5">Create group</li>
+                            <li data-id="#button6">Create subject</li>
+                            <li data-id="#button7">Add subject detail</li>
+
+
+                        </ul>
+                        <div class="menu-item-content">
+                            <div id="button1" class="menu-item active">
+                                <div class="form-wrapper">
+                                    <form class="profile-admin-form" action="edit_profile_admin" method="POST">
+                                        <div class="form-name">Edit profile</div>
+                                        <div class="input-block">
+                                            <label for="first_name">First name: </label>
+                                            <input type="text" id="first_name" name="first_name" value="<%=admin_data['first_name']%>">
+                                        </div>
+                                        <div class="input-block">
+                                            <label for="last_name">Last name: </label>
+                                            <input type="text" id="last_name" name="last_name" value="<%=admin_data['last_name']%>">
+                                        </div>
+                                        <div class="input-block">
+                                            <label for="email">Email: </label>
+                                            <input type="text" id="email" name="email" value="<%=admin_data['email']%>">
+                                        </div>
+                                        <div class="input-block">
+                                            <label for="password">Password: </label>
+                                            <input type="password" id="password" name="password">
+                                        </div>
+                                        <div class="input-block">
+                                            <label for="repeat_password">Repeat password:</label>
+                                            <input type="password" id="repeat_password" name="repeat_password">
+                                        </div>
+                                        <input type="submit" class="submit-button" value="Edit">
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="button2" class="menu-item">
+                                <div class="form-wrapper">
+                                    <form action="add_user" method="post" class="add-user-form">
+                                        <div class="form-name">Add new user</div>
+                                        <div class="input-block">
+                                            <label for="email">Email:</label>
+                                            <input type="text" id="email" name="email" required>
+                                        </div>
+                                        <div class="role-groups">
+                                            <div id="role">
+                                                <div class="input-block">
+                                                    <input type="radio" id="student" name="role" value="student" checked>
+                                                    <label for="student">Student</label>
+                                                </div>
+                                                <div class="input-block">
+                                                    <input type="radio" id="teacher" name="role" value="teacher">
+                                                    <label for="teacher">Teacher</label><br>
+                                                </div>
+                                            </div>
+
+                                            <div class="group active">
+                                                <div class="input-block">
+                                                    <label for="group">Group:</label>
+                                                    <input name="group" list="groups" />
+
+                                                    <datalist id="groups">
+                                            <% for(var i=0; i<groups.length;i++){ %>
+                                                <option><%=groups[i]['name']%></option>
+                                            <%}%>
+                                        </datalist>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="submit" class="submit-button" value="Add user">
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="button3" class="menu-item">
+                                <h3>Teachers</h3>
+                                <table class="table-with-teachers">
+                                    <tr>
+                                        <th>First name</th>
+                                        <th>Last name</th>
+                                        <th>Email</th>
+                                        <th></th>
+                                        <% for(var i=0; i<teachers.length;i++){ %>
+                                            <tr>
+                                                <td>
+                                                    <%=teachers[i]['first_name']%>
+                                                </td>
+                                                <td>
+                                                    <%=teachers[i]['last_name']%>
+                                                </td>
+                                                <td>
+                                                    <%=teachers[i]['email']%>
+                                                </td>
+                                                <td>
+                                                    <img class="trash-img delete-teacher" src="../images/trash.svg" title="trash" alt="trash" data-id="<%=teachers[i]['id']%>">
+                                                </td>
+                                            </tr>
+                                            <%}%>
+                                </table>
+                            </div>
+                            <div id="button4" class="menu-item">
+                                <div class="tables-of-students">
+                                    <% for(var i=0; i<groups.length;i++){ %>
+                                        <h3>
+                                            <%=groups[i]['name']%><img class="trash-img delete-group" src="../images/trash.svg" title="trash" alt="trash" data-id="<%=groups[i]['id']%>">
+                                        </h3>
+                                        <table class="table-of-students">
+                                            <tr>
+                                                <th>First name</th>
+                                                <th>Last name</th>
+                                                <th>Email</th>
+                                                <th></th>
+                                            </tr>
+                                            <% for(var j=0; j<groups_of_students.length;j++){ %>
+                                                <%if(groups[i]['name']==groups_of_students[j]['name']){%>
+                                                    <tr>
+                                                        <td>
+                                                            <%=groups_of_students[j]['first_name']%>
+                                                        </td>
+                                                        <td>
+                                                            <%=groups_of_students[j]['last_name']%>
+                                                        </td>
+                                                        <td>
+                                                            <%=groups_of_students[j]['email']%>
+                                                        </td>
+                                                        <td>
+                                                            <img class="trash-img delete-student" src="../images/trash.svg" title="trash" alt="trash" data-id="<%=groups_of_students[j]['id']%>">
+                                                        </td>
+                                                    </tr>
+                                                    <%}%>
+                                                        <%}%>
+                                        </table>
+                                        <%}%>
+                                </div>
+                            </div>
+                            <div id="button5" class="menu-item">
+                                <div class="form-wrapper">
+                                    <form action="create_group" method="post" class="create-group-form">
+                                        <div class="form-name">Create new group</div>
+                                        <div class="input-block">
+                                            <label for="group_name">Group name:</label>
+                                            <input type="text" id="group_name" name="group_name" required><br>
+                                        </div>
+                                        <input type="submit" class="submit-button" value="Create group">
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="button6" class="menu-item">
+                                <div class="form-wrapper">
+                                    <form action="create_subject" method="post" class="create-subject-form">
+                                        <div class="form-name">Create new subject</div>
+                                        <div class="input-block">
+                                            <label for="subject_name">Subject name:</label>
+                                            <input type="text" id="subject_name" name="subject_name" required><br>
+                                        </div>
+                                        <input type="submit" class="submit-button" value="Create subject">
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="button7" class="menu-item">
+                                <div class="form-wrapper">
+                                    <form action="add_subject_detail" method="post" class="add-subject-detail-form">
+                                        <div class="form-name">Add subject detail</div>
+                                        <div class="subject">
+                                            <div class="input-block">
+                                                <label for="subject">Subject</label>
+                                                <input name="subject" list="subjects" required/>
+
+                                                <datalist id="subjects">
+                                            <% for(var i=0; i<subjects.length;i++){ %>
+                                                <option><%=subjects[i]['name']%></option>
+                                            <%}%>
+                                            </datalist>
+                                            </div>
+                                        </div>
+                                        <div class="teacher">
+                                            <div class="input-block">
+                                                <label for="teacher">Teacher</label>
+                                                <input name="teacher" list="teachers" required/>
+
+                                                <datalist id="teachers">
+                                            <% for(var i=0; i<teachers.length;i++){ %>
+                                                <option><%=teachers[i]['first_name']%> <%=teachers[i]['last_name']%></option>
+                                            <%}%>
+                                            </datalist>
+                                            </div>
+                                        </div>
+                                        <div class="group_add">
+                                            <div class="input-block">
+                                                <label for="group">Group</label>
+                                                <input name="group" list="groups" required/>
+
+                                                <datalist id="groups">
+                                            <% for(var i=0; i<groups.length;i++){ %>
+                                                <option><%=groups[i]['name']%></option>
+                                            <%}%>
+                                            </datalist>
+                                            </div>
+                                        </div>
+                                        <input type="submit" class="submit-button" value="Create subject">
+                                    </form>
+                                    <h3>List of subject details</h3>
+                                    <%for(var i=0;i<subject_detail.length;i++){%>
+                                        <form action="update_subject_detail" method="post" class="update-subject-detail-form">
+                                            <div class="input-block">
+                                                <label for="subject_detail_id">Id:</label>
+                                                <input type="number" name="subject_detail_id" id="subject_detail_id" value="<%=subject_detail[i]['id']%>" readonly/>
+                                            </div>
+                                            <div class="subject">
+                                                <div class="input-block">
+                                                    <label for="subject">Subject</label>
+                                                    <input name="subject" list="subjects" value="<%=subject_detail[i]['subject_name']%>" required/>
+
+                                                    <datalist id="subjects">
+                                                <%for(var j=0; j<subjects.length;j++){ %>
+                                                    <option><%=subjects[j]['name']%></option>
+                                                <%}%>
+                                                </datalist>
+                                                </div>
+                                            </div>
+                                            <div class="teacher">
+                                                <div class="input-block">
+                                                    <label for="teacher">Teacher</label>
+                                                    <input name="teacher" list="teachers" value="<%=subject_detail[i]['user_first_name']%> <%=subject_detail[i]['user_last_name']%>" required/>
+
+                                                    <datalist id="teachers">
+                                                <%for(var j=0; j<teachers.length;j++){ %>
+                                                    <option><%=teachers[j]['first_name']%> <%=teachers[j]['last_name']%></option>
+                                                <%}%>
+                                                </datalist>
+                                                </div>
+                                            </div>
+                                            <div class="group_add">
+                                                <div class="input-block">
+                                                    <label for="group">Group</label>
+                                                    <input name="group" list="groups" value="<%=subject_detail[i]['group_name']%>" required/>
+
+                                                    <datalist id="groups">
+                                                <%for(var j=0; j<groups.length;j++){ %>
+                                                    <option><%=groups[j]['name']%></option>
+                                                <%}%>
+                                                </datalist>
+                                                </div>
+                                            </div>
+
+                                            <input type="submit" class="submit-button" value="Update">
+                                        </form>
+                                        <%}%>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="footer">
+                <div class="copyright">Copyright HomeLearning.com® 2020 ©</div>
+            </div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).on("click", ".list-of-menu li", function(e) {
+                console.log(e);
+                $(".menu-item-content > div").removeClass("active");
+                $(".list-of-menu li").removeClass("active");
+                $(e.target).addClass("active");
+                $(e.target.dataset.id).addClass("active");
+            });
+
+            $('input[type=radio][name=role]').change(function() {
+                if (this.value == 'student') {
+                    $('.form-wrapper .group').addClass("active")
+                } else {
+                    $('.form-wrapper .group').removeClass("active")
+                }
+            });
+
+            $(document).on("click", ".delete-group", function(e) {
+                let group_id = 0;
+                if (e.target.dataset.id) {
+                    group_id = e.target.dataset.id;
+                }
+                delete_group(group_id);
+            });
+            $(document).on("click", ".delete-teacher", function(e) {
+                let teacher_id = 0;
+                if (e.target.dataset.id) {
+                    teacher_id = e.target.dataset.id;
+                }
+                delete_teacher(teacher_id);
+            });
+            $(document).on("click", ".delete-student", function(e) {
+                let student_id = 0;
+                if (e.target.dataset.id) {
+                    student_id = e.target.dataset.id;
+                }
+                delete_student(student_id);
+            });
+
+        });
+
+        function delete_teacher(teacher_id) {
+            $.ajax({
+                url: '/delete_teacher',
+                type: 'post',
+                data: {
+                    id: teacher_id
+                }
+            });
+        };
+
+        function delete_group(group_id) {
+            $.ajax({
+                url: '/delete_group',
+                type: 'post',
+                data: {
+                    id: group_id
+                }
+            });
+        };
+
+        function delete_student(student_id) {
+            $.ajax({
+                url: '/delete_student',
+                type: 'post',
+                data: {
+                    id: student_id
+                }
+            });
+        };
+    </script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home Learning</title>
+    <link rel="stylesheet" href="../css/style_pages.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:700,300,600,800,400&subset=cyrillic,cyrillic-ext,latin">
+</head>
+
+<body class="profile-teacher">
+    <div class="main-wrapper">
+        <%- include(header)%>
+            <div class="main-block">
+                <div class="profile-wrapper">
+                    <h2>Teacher Profile</h2>
+
+                    <div class="user-avatar">
+
+                        <img class="profile-img" src="../images/user.png" title="user-avatar" alt="user-avatar">
+
+                        <div class="full-name">
+                            <%=teacher_data['first_name']%>
+                                <%=teacher_data['last_name']%>
+                        </div>
+                    </div>
+
+                    <div class="menu-profile">
+                        <ul class="list-of-menu">
+                            <li class="active" data-id="#button1">Edit profile</li>
+                            <li data-id="#button2">My subjects</li>
+                        </ul>
+                        <div class="menu-item-content">
+                            <div id="button1" class="menu-item active">
+                                <div class="form-wrapper">
+                                    <form class="profile-teacher-form" action="edit_profile_teacher" method="POST">
+                                        <div class="form-name">Edit profile</div>
+                                        <div class="input-block">
+                                            <label for="first_name">First name: </label>
+                                            <input type="text" id="first_name" name="first_name" value="<%=teacher_data['first_name']%>">
+                                        </div>
+                                        <div class="input-block">
+                                            <label for="last_name">Last name: </label>
+                                            <input type="text" id="last_name" name="last_name" value="<%=teacher_data['last_name']%>">
+                                        </div>
+                                        <div class="input-block">
+                                            <label for="email">Email: </label>
+                                            <input type="text" id="email" name="email" value="<%=teacher_data['email']%>">
+                                        </div>
+                                        <div class="input-block">
+                                            <label for="password">Password: </label>
+                                            <input type="password" id="password" name="password">
+                                        </div>
+                                        <div class="input-block">
+                                            <label for="repeat_password">Repeat password:</label>
+                                            <input type="password" id="repeat_password" name="repeat_password">
+                                        </div>
+                                        <input type="submit" class="submit-button" value="Edit">
+                                    </form>
+                                </div>
+                            </div>
+                            <div id="button2" class="menu-item">
+                                <%for(var i=0;i<subjects.length;i++){%>
+                                    <div class="profile-teacher-subject">
+                                        <%=subjects[i]['name']%>
+                                    </div>
+                                    <%for(var j=0;j<subject_detail.length;j++){%>
+                                        <%if(subject_detail[j]['subject_id']==subjects[i]['subject_id']){%>
+                                            <div class="teacher-subject-group">
+                                                <h3>
+                                                    <%=subject_detail[j]['group_name']%>
+                                                </h3>
+                                                <table class="table-of-students">
+                                                    <tr>
+                                                        <th>First name</th>
+                                                        <th>Last name</th>
+                                                    </tr>
+                                                    <%for(var k=0;k<groups.length;k++){%>
+                                                        <%if(groups[k]['group_name']==subject_detail[j]['group_name']){%>
+                                                            <tr>
+                                                                <td>
+                                                                    <%=groups[k]['user_first_name']%>
+                                                                </td>
+                                                                <td>
+                                                                    <%=groups[k]['user_last_name']%>
+                                                                </td>
+                                                            </tr>
+                                                            <%}%>
+                                                                <%}%>
+                                                </table>
+                                            </div>
+                                            <%}%>
+                                                <%}%>
+                                                    <%}%>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="copyright">Copyright HomeLearning.com® 2020 ©</div>
+            </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).on("click", ".list-of-menu li", function(e) {
+                console.log(e);
+                $(".menu-item-content > div").removeClass("active");
+                $(".list-of-menu li").removeClass("active");
+                $(e.target).addClass("active");
+                $(e.target.dataset.id).addClass("active");
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>

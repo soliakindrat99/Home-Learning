@@ -1,0 +1,120 @@
+.main-wrapper {
+    width: 93%;
+    /* margin: 0 auto; */
+    display: flex;
+    flex-direction: column;
+    /* align-items: stretch; */
+    justify-content: space-between;
+    height: 100%;
+}
+
+.main-wrapper>div {
+    width: 100%;
+}
+
+.main-wrapper .header {
+    display: flex;
+    height: 165px;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    background: #93c6d3;
+}
+
+.header .title {
+    width: 49%;
+    height: 90%;
+    display: flex;
+    font-size: 37px;
+    background: #4c94be;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    text-transform: uppercase;
+    color: white;
+}
+
+body {
+    background: #94a9e396;
+    height: max-content;
+    display: flex;
+    justify-content: space-around;
+    height: 100%;
+    /* align-items: stretch; */
+    margin: 0;
+}
+
+.main-nav {
+    width: 20%;
+    max-width: 125px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-nav button {
+    width: 100%;
+    margin: 7px;
+    height: 33px;
+    border-radius: 12px;
+    background: #2babaa;
+}
+
+img.logo-img {
+    width: 150px;
+    height: 140px;
+}
+
+.main-block {
+    display: flex;
+    flex-direction: row;
+    background: #76c3c29c;
+    justify-content: space-around;
+    height: 62%;
+    align-items: center;
+}
+
+.slider {
+    width: 40%;
+}
+
+.slider img {
+    width: 100%;
+}
+
+.slider.a {
+    width: 60%;
+}
+
+.main-block .some-text {
+    width: 37%;
+    display: flex;
+}
+
+.footer {
+    height: 30px;
+    background: #666a73;
+}
+
+.footer {
+    align-self: flex-end;
+}
+
+html {
+    height: 100%;
+    margin: 0;
+}
+
+.main-nav button:hover {
+    background: #28cfce;
+    color: white;
+}
+
+button.sign-up {
+    background: #2bab58;
+}
+
+button.sign-up:hover {
+    background: #2fd86a;
+}

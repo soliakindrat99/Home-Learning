@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Home Learning</title>
+    <link rel="stylesheet" href="../css/style_pages.css">
+</head>
+
+<body>
+    <div class="main-wrapper">
+        <%- include(header)%>
+            <div class="main-block">
+                <div class="main-home-page">
+                    <div class="list-of-menu main-list-of-subject">
+                        <% for(var i=0; i<subjects.length;i++){ %>
+                            <div class="item-subject">
+                                <div class="subject-title" data-id="#subject<%=i+1%>">
+                                    <%=subjects[i]['sub_name']%>
+                                </div>
+                                <div class="main-list-item-content">
+                                    <ul id="subject<%=i+1%>" class="subject-content">
+                                        <li data-id="#lecture<%=i+1%>">Lectures</li>
+                                        <li data-id="#task<%=i+1%>">Tasks</li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                            <%}%>
+                    </div>
+                    <div class="menu-item-content">
+
+                        <div class="main-list-item-section">
+                            <% for(var i=0; i<subjects.length;i++){ %>
+                                <div id="lecture<%=i+1%>" class="subject-section">
+                                    <!-- lecture
+                                    <%=i+1%> -->
+                                    <!-- list all lectures -->
+                                    <div class="add-lecture">
+                                        <button class="add-lecture-button">Add lecture</button>
+                                    </div>
+
+                                </div>
+                                <div id="task<%=i+1%>" class="subject-section">
+                                    <!-- task
+                                    <%=i+1%> -->
+                                    <div class="add-task">
+                                        <button class="add-task-button">Add task</button>
+                                    </div>
+                                </div>
+                                <%}%>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="copyright">Copyright HomeLearning.com® 2020 ©</div>
+            </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).on("click", ".main-list-of-subject .subject-title", function(e) {
+                console.log(e);
+                $('.item-subject').removeClass("active");
+                $(".main-list-item-section .subject-section").removeClass("active");
+                $(".main-list-of-subject").removeClass("active");
+                $(e.target).closest('.item-subject').addClass("active");
+
+            });
+
+            $(document).on("click", ".main-list-item-content .subject-content li", function(e) {
+                console.log(e);
+                $(".main-list-item-section .subject-section").removeClass("active");
+                $(".main-list-item-content .subject-content li").removeClass("active");
+                $(e.target).addClass("active");
+                $(e.target.dataset.id).addClass("active");
+            });
+        });
+    </script>
+</body>
+
+</html>
