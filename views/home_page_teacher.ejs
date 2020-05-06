@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Home Learning</title>
     <link rel="stylesheet" href="../css/style_pages.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:700,300,600,800,400&subset=cyrillic,cyrillic-ext,latin">
 </head>
 
 <body>
@@ -35,19 +36,157 @@
                         <div class="main-list-item-section">
                             <% for(var i=0; i<subjects.length;i++){ %>
                                 <div id="lecture<%=i+1%>" class="subject-section">
-                                    <!-- lecture
-                                    <%=i+1%> -->
-                                    <!-- list all lectures -->
+
+                                    <div class="list-of-lectures">
+                                        <% for(var j=0; j<lectures.length;j++){ %>
+                                            <%if(lectures[j]['subject_name']==subjects[i]['sub_name']){%>
+                                                <div class="lecture00">
+                                                    <div class="name-lecture>">
+                                                        <%=lectures[j]['lecture_name']%>
+                                                    </div>
+                                                    <div class="name-group">
+                                                        Group:
+                                                        <%=lectures[j]['group_name']%>
+                                                    </div>
+                                                    <div class="name-file-lecture">
+                                                        <a href="<%=lectures[j]['file_url']%>" download>
+                                                            download
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <%}%>
+                                                    <%}%>
+                                    </div>
                                     <div class="add-lecture">
                                         <button class="add-lecture-button">Add lecture</button>
+                                    </div>
+                                    <div class="form-wrapper">
+                                        <form class="home-page-teacher-form" action="attach_lecture" method="POST" enctype="multipart/form-data">
+                                            <div class="form-name">Add lecture</div>
+                                            <input type="hidden" id="subject" name="subject" value="<%=subjects[i]['sub_name']%>">
+                                            <div class="group_add">
+                                                <div class="input-block">
+                                                    <label for="group">Group</label>
+                                                    <input name="group" list="groups" required/>
+
+                                                    <datalist id="groups">
+                                                <%for(var j=0; j<groups.length;j++){ %>
+                                                    <option><%=groups[j]['name']%></option>
+                                                <%}%>
+                                                </datalist>
+                                                </div>
+                                            </div>
+                                            <div class="input-block">
+                                                <label for="name">Name lecture: </label>
+                                                <input type="text" id="name" name="name" required>
+                                            </div>
+                                            <div class="input-block">
+                                                <label for="lecture_file">Attach file: </label>
+                                                <input type="file" id="lecture_file" name="lecture_file" required>
+                                            </div>
+                                            <input type="submit" class="submit-button" value="Add">
+
+                                        </form>
                                     </div>
 
                                 </div>
                                 <div id="task<%=i+1%>" class="subject-section">
-                                    <!-- task
-                                    <%=i+1%> -->
+                                    <div class="list-of-tasks">
+                                        <% for(var j=0; j<tasks.length;j++){ %>
+                                            <%if(tasks[j]['subject_name']==subjects[i]['sub_name']){%>
+                                                <div class="task00">
+                                                    <div class="name-task>">
+                                                        <%=tasks[j]['task_name']%>
+                                                    </div>
+                                                    <div class="name-group">
+                                                        Group:
+                                                        <%=tasks[j]['group_name']%>
+                                                    </div>
+                                                    <div class="max-mark">
+                                                        Max mark:
+                                                        <%=tasks[j]['max_mark']%>
+                                                    </div>
+                                                    <div class="start-date">
+                                                        Start date:
+                                                        <%=new Date(tasks[j]['start_date']).toDateString()%>
+                                                    </div>
+                                                    <div class="finish-date">
+                                                        Finish date:
+                                                        <%=new Date(tasks[j]['end_date']).toDateString()%>
+                                                    </div>
+                                                    <div class="name-file-lecture">
+                                                        <a href="<%=tasks[j]['task_url']%>" download>
+                                                            download
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <%}%>
+                                                    <% for(var k=0; k<task_details.length;k++){ %>
+                                                        <%if(tasks[j]['task_id']==task_details[k]['task_id'] && tasks[j]['group_name']==task_details[k]['group_name']){%>
+                                                            <div class="list-of-answers">
+                                                                <div class="group_name">
+                                                                    Group name :
+                                                                    <%=task_details[k]['group_name']%>
+                                                                </div>
+                                                                <div class="student_name">
+                                                                    Student:
+                                                                    <%=task_details[k]['first_name']%>
+                                                                        <%=task_details[k]['last_name']%>
+                                                                </div>
+                                                                <div class="task_answer">
+                                                                    <a href="<%=task_details[k]['url_answer']%>" download>
+                                                                        download
+                                                                    </a>
+                                                                </div>
+
+                                                            </div>
+                                                            <%}%>
+                                                                <%}%>
+                                                                    <%}%>
+                                    </div>
                                     <div class="add-task">
                                         <button class="add-task-button">Add task</button>
+                                    </div>
+                                    <div class="form-wrapper">
+
+                                        <form class="home-page-teacher-form" action="add_task" method="POST" enctype="multipart/form-data">
+                                            <div class="form-name">Add task</div>
+                                            <input type="hidden" id="subject" name="subject" value="<%=subjects[i]['sub_name']%>">
+                                            <div class="group_add">
+                                                <div class="input-block">
+                                                    <label for="group">Group</label>
+                                                    <input name="group" list="groups" required/>
+
+                                                    <datalist id="groups">
+                                                <%for(var j=0; j<groups.length;j++){ %>
+                                                    <option><%=groups[j]['name']%></option>
+                                                <%}%>
+                                                </datalist>
+                                                </div>
+                                            </div>
+                                            <div class="input-block">
+                                                <label for="task_name">Name task: </label>
+                                                <input type="text" id="task_name" name="task_name" required>
+                                            </div>
+                                            <div class="input-block">
+                                                <label for="max_mark">Max mark: </label>
+                                                <input type="number" id="max_mark" name="max_mark" required>
+                                            </div>
+                                            <div class="input-block">
+                                                <label for="start_date">Start date: </label>
+                                                <input type="date" id="start_date" name="start_date" required>
+                                            </div>
+                                            <div class="input-block">
+                                                <label for="finish_date">Finish date: </label>
+                                                <input type="date" id="finish_date" name="finish_date" required>
+                                            </div>
+                                            <div class="input-block">
+                                                <label for="task_file">Attach file: </label>
+                                                <input type="file" id="task_file" name="task_file" required>
+                                            </div>
+                                            <input type="submit" class="submit-button" value="Add">
+
+                                        </form>
                                     </div>
                                 </div>
                                 <%}%>

@@ -5,8 +5,15 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const bcrypt = require("bcryptjs");
 const nodemailer = require('nodemailer');
+var multer = require('multer')
+var upload = multer({ dest: 'public/attached_files/' });
+var upload_tasks = multer({ dest: 'public/tasks/' });
+var attached_answers = multer({ dest: 'public/attached_answers/' });
+const fs = require('fs');
+
 const secret = 'mysecrethomelearning';
 const app = express();
+
 
 app.use(express.static('public'));
 app.use(cookieParser());
@@ -75,7 +82,50 @@ app.get('/home_page_student', auth, (req, res) => {
             if (error) {
                 throw error
             }
-            res.render('home_page_student', { subjects: res_subjects.rows, header: 'header_student' });
+            pool.query(`select subjects.name as subject_name, groups.name as group_name,tasks.id as task_id,
+            tasks.name as task_name, tasks.max_mark as max_mark, tasks.start_date as start_date,
+            tasks.end_date as finish_date, tasks.url as task_url from subjects
+                    join subject_detail on subjects.id=subject_detail.subject_id
+                    join groups on groups.id=subject_detail.group_id
+                    join students on students.group_id=groups.id
+                    join users on users.id=students.user_id
+                    join tasks on tasks.subject_detail_id=subject_detail.id
+                    where email=$1`, [req.user.email], (error, res_tasks) => {
+                if (error) {
+                    throw error
+                }
+                pool.query(`select subjects.name as subject_name, groups.name as group_name,
+                lectures.name as lecture_name, attached_file.url as file_url from subjects
+                        join subject_detail on subjects.id=subject_detail.subject_id
+                        join groups on groups.id=subject_detail.group_id
+                        join students on students.group_id=groups.id
+                        join users on users.id=students.user_id
+                        join lectures on lectures.subject_detail_id=subject_detail.id
+                        join attached_file on attached_file.lecture_id=lectures.id
+                        where email=$1`, [req.user.email], (error, res_lectures) => {
+                    if (error) {
+                        throw error
+                    }
+                    pool.query(`select students.id as student_id,task_detail.task_id,task_detail.url_answer
+                    from students
+                    join users on users.id=students.user_id
+                    join task_detail on task_detail.student_id=students.id
+                    join tasks on task_detail.task_id=tasks.id
+                    where email=$1`, [req.user.email], (error, res_attached_answers) => {
+                        if (error) {
+                            throw error
+                        }
+                        res.render('home_page_student', {
+                            subjects: res_subjects.rows,
+                            tasks: res_tasks.rows,
+                            lectures: res_lectures.rows,
+                            attached_answers: res_attached_answers.rows,
+                            header: 'header_student'
+                        });
+                    });
+                });
+
+            });
         });
 
     } else {
@@ -83,22 +133,190 @@ app.get('/home_page_student', auth, (req, res) => {
     }
 });
 
-app.get('/home_page_teacher', auth, (req, res) => {
+app.post('/attach_answer', auth, attached_answers.array('answer_file', 1), async(req, res) => {
+    const res_student_id = await pool.query(`select students.id as student_id from students
+    join users on users.id=students.user_id
+    where email=$1`, [req.user.email]);
+    let student_id = res_student_id.rows[0]['student_id'];
+    fs.rename(req.files[0]['path'], 'public\\attached_answers\\' + req.files[0]['originalname'], (error) => {
+        if (error) {
+            throw error
+        }
+        pool.query(`INSERT INTO task_detail(task_id, student_id, url_answer) VALUES ($1, $2, $3)`, [req.body.task_id, student_id, path.join('..//attached_answers/', req.files[0]['originalname'])], (error) => {
+            if (error) {
+                throw error
+            }
+            res.redirect('/home_page_student');
+        });
+    });
+});
+
+app.get('/home_page_teacher', auth, async(req, res) => {
     if (req.user.role == 'teacher') {
-        pool.query(`select subjects.name as sub_name from subjects
+        const res_subjects = await pool.query(`select subjects.name as sub_name from subjects
         join subject_detail on subjects.id=subject_detail.subject_id
         join teachers on teachers.id=subject_detail.teacher_id
         join users on users.id=teachers.user_id
         where email=$1
-        group by sub_name`, [req.user.email], (error, res_subjects) => {
-            if (error) {
-                throw error
-            }
-            res.render('home_page_teacher', { subjects: res_subjects.rows, header: 'header_teacher' });
+        group by sub_name`, [req.user.email]);
+
+        const res_groups = await pool.query(`select groups.name as name from groups
+        join subject_detail on groups.id=subject_detail.group_id
+        join teachers on teachers.id=subject_detail.teacher_id
+        join users on users.id=teachers.user_id
+        where email=$1
+        group by name`, [req.user.email]);
+
+        const res_lectures = await pool.query(`select subjects.name as subject_name, groups.name as group_name, 
+        lectures.name as lecture_name, attached_file.url as file_url from subject_detail
+        join teachers on teachers.id=subject_detail.teacher_id
+        join users on users.id=teachers.user_id
+        join subjects on subjects.id=subject_detail.subject_id
+        join groups on groups.id=subject_detail.group_id
+        join lectures on subject_detail.id=lectures.subject_detail_id
+        join attached_file on attached_file.lecture_id=lectures.id
+        where email=$1`, [req.user.email]);
+
+        const res_tasks = await pool.query(`select subjects.name as subject_name, groups.name as group_name, tasks.id as task_id,
+        tasks.name as task_name, tasks.url as task_url, tasks.max_mark as max_mark,
+        tasks.start_date as start_date, tasks.end_date as end_date from subject_detail
+                join teachers on teachers.id=subject_detail.teacher_id
+                join users on users.id=teachers.user_id
+                join subjects on subjects.id=subject_detail.subject_id
+                join groups on groups.id=subject_detail.group_id
+                join tasks on subject_detail.id=tasks.subject_detail_id
+                where email=$1`, [req.user.email]);
+
+        const res_teacher_id = await pool.query(`select teachers.id as teacher_id from teachers
+        join users on users.id=teachers.user_id
+        where email=$1`, [req.user.email]);
+
+        const res_task_details = await pool.query(`select task_detail.task_id,task_detail.url_answer, task_detail.student_id, 
+        users.first_name,users.last_name, groups.name as group_name from subject_detail
+        join tasks on subject_detail.id=tasks.subject_detail_id
+        join task_detail on task_detail.task_id=tasks.id
+        join students on students.id=task_detail.student_id
+        join users on users.id=students.user_id
+        join groups on groups.id=students.group_id
+        where teacher_id=$1`, [res_teacher_id.rows[0]['teacher_id']]);
+
+        res.render('home_page_teacher', {
+            subjects: res_subjects.rows,
+            lectures: res_lectures.rows,
+            tasks: res_tasks.rows,
+            groups: res_groups.rows,
+            task_details: res_task_details.rows,
+            header: 'header_teacher'
         });
     } else {
         res.redirect('/');
     }
+});
+
+app.post('/attach_lecture', auth, upload.array('lecture_file', 1), (req, res) => {
+    let teacher_id = 0;
+    let subject_id = 0;
+    let group_id = 0;
+    pool.query(`select teachers.id as teacher_id from users
+    join teachers on teachers.user_id=users.id
+    where email=$1`, [req.user.email], (error, res_reacher_id) => {
+        if (error) {
+            throw error
+        }
+        teacher_id = res_reacher_id.rows[0]['teacher_id'];
+        pool.query(`select id as subject_id from subjects
+        where name=$1`, [req.body.subject], (error, res_subject_id) => {
+            if (error) {
+                throw error
+            }
+            subject_id = res_subject_id.rows[0]['subject_id'];
+            pool.query(`select id as group_id from groups
+            where name=$1`, [req.body.group], (error, res_group_id) => {
+                if (error) {
+                    throw error
+                }
+                group_id = res_group_id.rows[0]['group_id'];
+                pool.query(`select id from subject_detail
+            where subject_id=$1 and teacher_id=$2 and group_id=$3`, [subject_id, teacher_id, group_id], (error, res_subject_detail_id) => {
+                    if (error) {
+                        throw error
+                    }
+                    pool.query(`INSERT INTO lectures(name, subject_detail_id) VALUES ($1, $2)`, [req.body.name, res_subject_detail_id.rows[0]['id']], (error) => {
+                        if (error) {
+                            throw error
+                        }
+                        pool.query(`Select id from lectures where subject_detail_id=$1`, [res_subject_detail_id.rows[0]['id']], (error, res_lecture_id) => {
+                            if (error) {
+                                throw error
+                            }
+                            fs.rename(req.files[0]['path'], 'public\\attached_files\\' + req.files[0]['originalname'], (error) => {
+                                if (error) {
+                                    throw err
+                                }
+                                pool.query(`INSERT INTO attached_file(url, lecture_id) VALUES ($1, $2)`, [path.join('..//attached_files/', req.files[0]['originalname']), res_lecture_id.rows[0]['id']], (error) => {
+                                    if (error) {
+                                        throw error
+                                    }
+                                    res.redirect('/home_page_teacher');
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+app.post('/add_task', auth, upload_tasks.array('task_file', 1), (req, res) => {
+    let teacher_id = 0;
+    let subject_id = 0;
+    let group_id = 0;
+    pool.query(`select teachers.id as teacher_id from users
+    join teachers on teachers.user_id=users.id
+    where email=$1`, [req.user.email], (error, res_reacher_id) => {
+        if (error) {
+            throw error
+        }
+        teacher_id = res_reacher_id.rows[0]['teacher_id'];
+        pool.query(`select id as subject_id from subjects
+        where name=$1`, [req.body.subject], (error, res_subject_id) => {
+            if (error) {
+                throw error
+            }
+            subject_id = res_subject_id.rows[0]['subject_id'];
+            pool.query(`select id as group_id from groups
+            where name=$1`, [req.body.group], (error, res_group_id) => {
+                if (error) {
+                    throw error
+                }
+                group_id = res_group_id.rows[0]['group_id'];
+                pool.query(`select id from subject_detail
+            where subject_id=$1 and teacher_id=$2 and group_id=$3`, [subject_id, teacher_id, group_id], (error, res_subject_detail_id) => {
+                    if (error) {
+                        throw error
+                    }
+                    fs.rename(req.files[0]['path'], 'public\\tasks\\' + req.files[0]['originalname'], (error) => {
+                        if (error) {
+                            throw error
+                        }
+                        pool.query(`INSERT INTO tasks(name, start_date, end_date, subject_detail_id, max_mark, url)
+                    VALUES ($1, $2, $3, $4, $5, $6)`, [req.body.task_name, req.body.start_date, req.body.finish_date,
+                            res_subject_detail_id.rows[0]['id'], req.body.max_mark,
+                            path.join('..//tasks/', req.files[0]['originalname'])
+                        ], (error) => {
+                            if (error) {
+                                throw error
+                            }
+                            res.redirect('/home_page_teacher');
+
+                        });
+                    });
+                });
+            });
+        });
+    });
+
 });
 
 app.get('/profile_admin', auth, (req, res) => {
@@ -131,7 +349,8 @@ app.get('/profile_admin', auth, (req, res) => {
                         inner join teachers on teachers.id=subject_detail.teacher_id
                         inner join users on users.id=teachers.user_id
                         inner join groups on groups.id=subject_detail.group_id
-                        inner join subjects on subjects.id=subject_detail.subject_id`, (error, res_subject_detail) => {
+                        inner join subjects on subjects.id=subject_detail.subject_id
+                        order by user_first_name`, (error, res_subject_detail) => {
                             if (error) {
                                 throw error
                             }
@@ -386,18 +605,40 @@ app.post('/update_subject_detail', auth, (req, res) => {
 });
 
 
-app.get('/profile_student', auth, (req, res) => {
-    pool.query(`select first_name, last_name, email from users
-                where email=$1`, [req.user.email], (error, result) => {
-        if (error) {
-            throw error
-        }
-        if (req.user.role == 'student') {
-            res.render('profile_student', { student_data: result.rows[0], header: 'header_student' });
-        } else {
-            res.redirect('/');
-        }
-    })
+app.get('/profile_student', auth, async(req, res) => {
+    if (req.user.role == 'student') {
+        const student_id = await pool.query(`select students.id as  student_id from students
+        join users on users.id=students.user_id
+        where email=$1`, [req.user.email]);
+
+        const res_student_data = await pool.query(`select first_name, last_name, email from users
+        where email=$1`, [req.user.email]);
+
+        const res_subjects = await pool.query(`select subjects.id as subject_id, subjects.name as subject_name from subjects
+        join subject_detail on subject_detail.subject_id=subjects.id
+        join groups on groups.id=subject_detail.group_id
+        join students on groups.id=students.group_id
+        where students.id=$1`, [student_id.rows[0]['student_id']]);
+
+        const res_marks = await pool.query(`select subjects.id as subject_id, subjects.name as subject_name,
+        task_detail.mark, tasks.name as task_name from subjects
+        join subject_detail on subject_detail.subject_id=subjects.id
+        join groups on groups.id=subject_detail.group_id
+        join students on groups.id=students.group_id
+        join tasks on subject_detail.id=tasks.subject_detail_id
+        join task_detail on task_detail.task_id=tasks.id
+        where students.id=$1`, [student_id.rows[0]['student_id']]);
+
+
+        res.render('profile_student', {
+            student_data: res_student_data.rows[0],
+            subjects: res_subjects.rows,
+            marks: res_marks.rows,
+            header: 'header_student'
+        });
+    } else {
+        res.redirect('/');
+    }
 });
 app.post('/edit_profile_student', auth, (req, res) => {
     let user = [
@@ -425,7 +666,11 @@ app.post('/edit_profile_student', auth, (req, res) => {
     }
 });
 
-app.get('/profile_teacher', auth, (req, res) => {
+app.get('/profile_teacher', auth, async(req, res) => {
+    const res_teacher_id = await pool.query(`select teachers.id as teacher_id from teachers
+    join users on users.id=teachers.user_id
+    where email=$1`, [req.user.email]);
+
     pool.query(`select teachers.id as teacher_id, first_name, last_name, email from users
     join teachers on users.id=teachers.user_id
                     where email=$1`, [req.user.email], (error, result) => {
@@ -442,7 +687,8 @@ app.get('/profile_teacher', auth, (req, res) => {
                 if (error) {
                     throw error
                 }
-                pool.query(`select groups.name as group_name, users.first_name as user_first_name, users.last_name as user_last_name from groups
+                pool.query(`select students.id as student_id, groups.name as group_name, 
+                users.first_name as user_first_name, users.last_name as user_last_name from groups
                 join students on students.group_id=groups.id
                 join users on users.id=students.user_id
                 order by group_name`, (error, res_groups) => {
@@ -457,13 +703,36 @@ app.get('/profile_teacher', auth, (req, res) => {
                         if (error) {
                             throw error
                         }
-                        res.render('profile_teacher', {
-                            teacher_data: result.rows[0],
-                            subjects: res_subjects.rows,
-                            groups: res_groups.rows,
-                            subject_detail: res_subject_detail.rows,
-                            header: 'header_teacher'
+                        pool.query(`select tasks.id as task_id,tasks.name as task_name,groups.name as group_name from subject_detail
+                        join tasks on subject_detail.id=tasks.subject_detail_id
+                        join groups on groups.id=subject_detail.group_id
+                        where teacher_id=$1
+                        order by group_name`, [res_teacher_id.rows[0]['teacher_id']], (error, res_tasks) => {
+                            if (error) {
+                                throw error
+                            }
+                            pool.query(`select tasks.id as task_id,tasks.name as task_name,groups.name as group_name, task_detail.mark, task_detail.student_id from subject_detail
+                            join tasks on subject_detail.id=tasks.subject_detail_id
+                            join task_detail on task_detail.task_id=tasks.id
+                            join groups on groups.id=subject_detail.group_id
+                            where teacher_id=$1
+                            order by group_name`, [res_teacher_id.rows[0]['teacher_id']], (error, res_marks) => {
+                                if (error) {
+                                    throw error
+                                }
+                                res.render('profile_teacher', {
+                                    teacher_data: result.rows[0],
+                                    subjects: res_subjects.rows,
+                                    groups: res_groups.rows,
+                                    subject_detail: res_subject_detail.rows,
+                                    tasks: res_tasks.rows,
+                                    marks: res_marks.rows,
+                                    header: 'header_teacher'
+                                });
+                            });
+
                         });
+
                     });
                 });
 
@@ -499,6 +768,15 @@ app.post('/edit_profile_teacher', auth, (req, res) => {
         res.redirect('/profile_teacher');
     }
 
+});
+
+app.post('/add_mark', auth, (req, res) => {
+    pool.query(`UPDATE task_detail set mark=$1 where student_id=$2 and task_id=$3`, [req.body.mark, req.body.student_id, req.body.task_id], (error) => {
+        if (error) {
+            throw error
+        }
+        res.redirect('/profile_teacher');
+    });
 });
 
 function auth(req, res, next) {

@@ -243,6 +243,7 @@ form .form-name {
     font-weight: 300;
     padding: 4px 0 12px;
     color: #322a20;
+    text-align: center;
 }
 
 .input-block {
@@ -346,6 +347,7 @@ img.profile-img {
     justify-content: center;
     margin: 0 auto;
     padding: 15px;
+    position: relative;
 }
 
 .profile-teacher img.profile-img {
@@ -417,6 +419,7 @@ ul.list-of-menu {
 
 .menu-profile ul li.active {
     background: #A7A7A7;
+    color: white;
 }
 
 .menu-item-content .menu-item.active {
@@ -448,6 +451,10 @@ ul.list-of-menu {
     width: 100%;
 }
 
+.home-page-student .form-wrapper {
+    width: 100%;
+}
+
 .profile-admin-form,
 .add-user-form,
 .create-group-form,
@@ -455,7 +462,7 @@ ul.list-of-menu {
 .add-subject-detail-form,
 .profile-student-form,
 .profile-teacher-form,
-.update-subject-detail-form {
+.home-page-student-form {
     width: calc(100% - 42px);
     display: flex;
     flex-direction: column;
@@ -623,6 +630,8 @@ h3 img.trash-img {
 
 .subject-section.active {
     display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .subject-title {
@@ -660,6 +669,7 @@ h3 img.trash-img {
 
 .list-of-menu.main-list-of-subject .subject-content li.active {
     background: #A7A7A7;
+    color: white;
 }
 
 button.add-lecture-button,
@@ -692,6 +702,7 @@ button.add-task-button {
     font-style: Roboto;
     font-weight: 300;
     font-size: 18px;
+    color: white;
     background-color: #A7A7A7;
 }
 
@@ -713,4 +724,140 @@ button.add-task-button {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.list-of-lectures {
+    width: 100%;
+}
+
+.list-of-lectures {
+    width: 100%;
+}
+
+.lecture00 {
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 8px;
+    margin: 10px auto;
+    padding: 10px;
+    justify-content: center;
+    margin: 10px auto 10px auto;
+    width: 88%;
+    font-weight: 300;
+}
+
+.lecture00>div {
+    margin: 5px 10px;
+}
+
+.form-wrapper form {
+    border: 1px solid #968383;
+    border-radius: 8px;
+    padding: 0 20px 20px;
+}
+
+.form-wrapper .submit-button {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.list-of-tasks {
+    width: 90%;
+}
+
+.task00 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    margin: 10px 0;
+    font-weight: 300;
+    flex-direction: row;
+    justify-content: space-around;
+    border-radius: 8px;
+    padding: 10px;
+    background: #a7a7aa7a;
+}
+
+.task00>div {
+    margin: 5px 10px;
+}
+
+.attach_answer {
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    margin: 10px 0;
+    font-weight: 300;
+    flex-direction: row;
+    justify-content: space-around;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.list-of-answers {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    margin: 10px 0;
+    font-weight: 300;
+    flex-direction: row;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.profile-teacher-form-add-mark .submit-button {
+    height: 35px;
+    width: 172px;
+    margin-top: 10px;
+}
+
+.list-of-answers>div {
+    margin: 0 20px;
+}
+
+.student-list-of-subjects {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    margin: 10px 30px;
+    font-weight: 300;
+    flex-direction: column;
+    justify-content: space-around;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+form.profile-teacher-form-add-mark {
+    display: flex;
+    flex-direction: row;
+}
+
+.update-subject-detail-form .submit-button {
+    width: 88px;
+    font-size: 17px;
+    margin: 27px auto 0;
+    padding: 0px 10px;
+    height: 34px;
+}
+
+form.update-subject-detail-form {
+    width: calc(100% - 119px);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #968383;
+    border-radius: 8px;
+    padding: 0 20px 20px;
+    margin: 10px auto;
+}
+
+.update-subject-detail-form:last-child {
+    margin-bottom: 40px;
 }

@@ -76,6 +76,13 @@
                                                     <tr>
                                                         <th>First name</th>
                                                         <th>Last name</th>
+                                                        <%for(var k=0;k<tasks.length;k++){%>
+                                                            <%if(subject_detail[j]['group_name']==tasks[k]['group_name']){%>
+                                                                <th>
+                                                                    <%=tasks[k]['task_name']%>
+                                                                </th>
+                                                                <%}%>
+                                                                    <%}%>
                                                     </tr>
                                                     <%for(var k=0;k<groups.length;k++){%>
                                                         <%if(groups[k]['group_name']==subject_detail[j]['group_name']){%>
@@ -86,7 +93,33 @@
                                                                 <td>
                                                                     <%=groups[k]['user_last_name']%>
                                                                 </td>
+                                                                <%for(var l=0;l<tasks.length;l++){%>
+                                                                    <%if(subject_detail[j]['group_name']==tasks[l]['group_name']){%>
+                                                                        <%for(var m=0;m<marks.length;m++){%>
+                                                                            <%if(marks[m]['student_id']==groups[k]['student_id'] && marks[m]['mark']==null){%>
+                                                                                <td>
+                                                                                    <form class="profile-teacher-form-add-mark" action="add_mark" method="POST">
+                                                                                        <input type="text" id="task_id" name="task_id" value="<%=tasks[l]['task_id']%>" hidden>
+                                                                                        <input type="text" id="student_id" name="student_id" value="<%=groups[k]['student_id']%>" hidden>
+                                                                                        <div class="input-block">
+                                                                                            <input type="number" id="mark" name="mark">
+                                                                                        </div>
+                                                                                        <input type="submit" class="submit-button" value="Add mark">
+                                                                                    </form>
+
+                                                                                </td>
+                                                                                <%}%>
+                                                                                    <%if(marks[m]['mark']!=null && marks[m]['student_id']==groups[k]['student_id']){%>
+                                                                                        <td>
+                                                                                            <%=marks[m]['mark']%>
+                                                                                        </td>
+                                                                                        <%}%>
+                                                                                            <%}%>
+                                                                                                <%}%>
+                                                                                                    <%}%>
+
                                                             </tr>
+
                                                             <%}%>
                                                                 <%}%>
                                                 </table>

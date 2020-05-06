@@ -232,13 +232,15 @@
                                         </div>
                                         <input type="submit" class="submit-button" value="Create subject">
                                     </form>
+                                </div>
+                                <div class="admin-list-of-subject-detail">
                                     <h3>List of subject details</h3>
                                     <%for(var i=0;i<subject_detail.length;i++){%>
                                         <form action="update_subject_detail" method="post" class="update-subject-detail-form">
-                                            <div class="input-block">
-                                                <label for="subject_detail_id">Id:</label>
-                                                <input type="number" name="subject_detail_id" id="subject_detail_id" value="<%=subject_detail[i]['id']%>" readonly/>
-                                            </div>
+
+
+                                            <input type="number" name="subject_detail_id" id="subject_detail_id" value="<%=subject_detail[i]['id']%>" hidden/>
+
                                             <div class="subject">
                                                 <div class="input-block">
                                                     <label for="subject">Subject</label>

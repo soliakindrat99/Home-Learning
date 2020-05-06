@@ -28,7 +28,7 @@
                     <div class="menu-profile">
                         <ul class="list-of-menu">
                             <li class="active" data-id="#button1">Edit profile</li>
-                            <li data-id="#button2">edit</li>
+                            <li data-id="#button2">View my marks</li>
                         </ul>
                         <div class="menu-item-content">
                             <div id="button1" class="menu-item active">
@@ -62,7 +62,21 @@
                                 </div>
                             </div>
                             <div id="button2" class="menu-item">
-                                dshgfxfhgfgchgfds
+                                <%for(var i=0;i<subjects.length;i++){%>
+                                    <div class="student-list-of-subjects">
+                                        <div class="subject">
+                                            <%=subjects[i]['subject_name']%>
+                                        </div>
+                                        <%for(var j=0;j<marks.length;j++){%>
+                                            <%if(subjects[i]['subject_name']==marks[j]['subject_name']){%>
+                                                <div class="task_mark">
+                                                    <%=marks[j]['task_name']%> :
+                                                        <%=marks[j]['mark']%>
+                                                </div>
+                                                <%}%>
+                                                    <%}%>
+                                    </div>
+                                    <%}%>
                             </div>
                         </div>
                     </div>
